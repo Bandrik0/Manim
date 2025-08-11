@@ -1,90 +1,110 @@
-🎬 Manim Logo Renderer WebApp
+# 🎬 Manim Logo Renderer WebApp
 
-A simple web application to create animated logo videos using Manim.Upload your logo (SVG or PNG) → choose an animation style → instantly get a rendered MP4 video.
+Create beautiful animated logo videos in seconds using [Manim](https://www.manim.community/)!  
+Upload your logo (SVG/PNG), pick an animation, and download your MP4 — all in your browser.
 
-✨ Features
+---
 
-Multiple Animation Styles:
+## ✨ Features
+- **Multiple Animations:** `draw` (SVG outline tracing), `fade`, `spin`, `bounce`
+- **Customizable:** Set background color, animation duration, and video quality
+- **Instant Preview:** Drag & drop logo, see animation options, download result
+- **Simple Stack:** FastAPI backend (Python), minimal HTML/JS frontend
+- **Docker-ready:** 1-click deploy to **Hugging Face Spaces** or run locally
 
-Draw (outline tracing)
+---
 
-Fade In
-
-Bounce
-
-Supports SVG and PNG logos
-
-Rendered with Manim for smooth vector animations
-
-Docker-ready → Deploy on Hugging Face Spaces for free
-
-FastAPI backend + simple HTML/JS frontend
-
-📂 Project Structure
-
-MANIM-LOGO-WEBAPP
-│
-├── backend
-│   ├── app.py              # FastAPI server
-│   ├── renderer.py         # Manim rendering logic
-│   ├── requirements.txt    # Backend dependencies
-│
-├── frontend
-│   ├── index.html          # Web UI for uploading and selecting animations
-│
-├── Dockerfile              # Hugging Face Spaces Docker setup
+## 📂 Project Structure
+```
+.
+├── backend/
+│   ├── app.py            # FastAPI app: POST /render, GET /health, serves /web
+│   ├── renderer.py       # Manim scene generator + CLI render
+│   ├── requirements.txt  # Python dependencies for backend + Manim
+├── frontend/
+│   └── index.html        # Drag & drop UI
+├── Dockerfile            # Root-level, for Hugging Face Spaces & Docker
 ├── .gitignore
 └── README.md
+```
 
-🚀 Local Setup
+---
 
-1. Clone the repo
+## 🚀 Local Setup
 
-git clone https://github.com/<your-username>/manim-logo-webapp.git
-cd manim-logo-webapp
+**Requirements:**  
+- Python 3.11+  
+- `ffmpeg` (if not using Docker)  
+- On Apple Silicon (macOS M1/M2), Manim is easiest via conda-forge (see Troubleshooting below)
 
-2. Create a virtual environment & install dependencies
-
+### 1. Create a virtual environment & install dependencies
+```bash
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate    # On Windows: .venv\Scripts\activate
 pip install --upgrade pip
 pip install -r backend/requirements.txt
+```
 
-3. Run the backend server
-
+### 2. Run the backend server
+```bash
 uvicorn app:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
+```
 
-The backend will be available at:http://127.0.0.1:8000
+### 3. Open the web UI
+Just open `frontend/index.html` in your browser.
 
-🌐 Deploy to Hugging Face Spaces
+Health check: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health) → returns `{"ok": true}`
 
-Create a new Docker Space on Hugging Face Spaces.
+---
 
-Upload all project files, keeping the folder structure.
+## 🐳 Deploy on Hugging Face Spaces (or Docker)
 
-The included Dockerfile will handle dependencies and start the FastAPI server.
+1. **On Hugging Face Spaces:**  
+   - Click "Create Space", choose **Docker** as the SDK, and point to this repo.
+   - The included `Dockerfile` handles all dependencies.
 
-Once built, your app will be available at:
+2. **With Docker locally:**  
+   ```bash
+   docker build -t manim-logo-webapp .
+   docker run -p 8000:8000 manim-logo-webapp
+   ```
+   Then open `frontend/index.html` and use as above.
 
-https://<username>-<space-name>.hf.space/web
+---
 
-🛠 Dependencies
+## 🛠️ Troubleshooting / Notes
+- **Apple Silicon (M1/M2):**  
+  Manim works best via conda.  
+  ```bash
+  brew install miniforge
+  conda create -n manim python=3.11
+  conda activate manim
+  pip install -r backend/requirements.txt
+  ```
+- **SVGs:** For best results, use simple SVG logos (single path or group).
+- **Security:** The backend does not persist uploads or output files.
 
-Python 3.10+
+---
 
-Manim
+## 📦 Dependencies
+- [Manim Community Edition](https://www.manim.community/) (video rendering)
+- [FastAPI](https://fastapi.tiangolo.com/) (API backend)
+- [Uvicorn](https://www.uvicorn.org/) (ASGI server)
+- [Pillow](https://python-pillow.org/) (image processing)
+- [ffmpeg](https://ffmpeg.org/) (video encoding, must be installed system-wide)
 
-FastAPI
+All backend Python dependencies are listed in `backend/requirements.txt`.
 
-Uvicorn
+---
 
-ffmpeg (required by Manim)
+## 📝 License
 
-📜 License
+MIT License — see [LICENSE](LICENSE).
 
-MIT License — feel free to modify and use.
+---
 
-❤️ Credits
+## 🙏 Credits
 
-Built with Manim & FastAPI.Inspired by creative coding & animation projects.
-
+- Built by [@beitkhalaf](https://github.com/beitkhalaf)
+- Powered by [Manim Community](https://www.manim.community/)
+- Inspired by open-source creativity!
