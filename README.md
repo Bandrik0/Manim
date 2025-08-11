@@ -3,7 +3,7 @@
 Create beautiful animated logo videos in seconds using [Manim](https://www.manim.community/)!  
 Upload your logo (SVG/PNG), pick an animation, and download your MP4 — all in your browser.
 
-#live on https://bandrik0-manim.hf.space/web #
+# live on https://bandrik0-manim.hf.space/web #
 
 
 ---
