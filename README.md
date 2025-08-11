@@ -1,39 +1,90 @@
-# Manim Logo Renderer (FastAPI + Frontend)
+🎬 Manim Logo Renderer WebApp
 
-**Logo yükle → animasyon seç → MP4 al.**  
-SVG için “draw” (çizme) animasyonu, PNG/JPG için fade/spin/bounce.
+A simple web application to create animated logo videos using Manim.Upload your logo (SVG or PNG) → choose an animation style → instantly get a rendered MP4 video.
 
-<p align="center">
-  <img alt="demo" src="https://img.shields.io/badge/FastAPI-0.111.0-009688?logo=fastapi">
-  <img alt="demo" src="https://img.shields.io/badge/Manim-0.19.0-6E4C13">
-  <img alt="demo" src="https://img.shields.io/badge/Docker-ready-0db7ed?logo=docker">
-</p>
+✨ Features
 
-## Özellikler
-- **/web**: Basit web arayüzü (drag & drop).
-- **POST /render**: FastAPI endpoint’i MP4 döner.
-- Animasyonlar: `draw` (SVG), `fade`, `spin`, `bounce`.
-- Arka plan rengi, süre ve kalite seçimi.
+Multiple Animation Styles:
 
-## Dizin Yapısı
-.
-├─ backend/
-│ ├─ app.py # FastAPI, /render + /web
-│ ├─ renderer.py # Manim çağrısı + sahne üretimi
-│ ├─ requirements.txt # Python bağımlılıkları
-├─ frontend/
-│ └─ index.html # Minimal UI
-├─ Dockerfile # (root) Hugging Face Spaces / Docker deploy
-└─ README.md
+Draw (outline tracing)
 
+Fade In
 
----
+Bounce
 
-## Lokal Çalıştırma (Mac/Linux/Windows)
-> Python 3.11+, ffmpeg gerekir (Docker kullanırsan gerekmez).
+Supports SVG and PNG logos
 
-```bash
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+Rendered with Manim for smooth vector animations
+
+Docker-ready → Deploy on Hugging Face Spaces for free
+
+FastAPI backend + simple HTML/JS frontend
+
+📂 Project Structure
+
+MANIM-LOGO-WEBAPP
+│
+├── backend
+│   ├── app.py              # FastAPI server
+│   ├── renderer.py         # Manim rendering logic
+│   ├── requirements.txt    # Backend dependencies
+│
+├── frontend
+│   ├── index.html          # Web UI for uploading and selecting animations
+│
+├── Dockerfile              # Hugging Face Spaces Docker setup
+├── .gitignore
+└── README.md
+
+🚀 Local Setup
+
+1. Clone the repo
+
+git clone https://github.com/<your-username>/manim-logo-webapp.git
+cd manim-logo-webapp
+
+2. Create a virtual environment & install dependencies
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
 pip install -r backend/requirements.txt
+
+3. Run the backend server
+
 uvicorn app:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
+
+The backend will be available at:http://127.0.0.1:8000
+
+🌐 Deploy to Hugging Face Spaces
+
+Create a new Docker Space on Hugging Face Spaces.
+
+Upload all project files, keeping the folder structure.
+
+The included Dockerfile will handle dependencies and start the FastAPI server.
+
+Once built, your app will be available at:
+
+https://<username>-<space-name>.hf.space/web
+
+🛠 Dependencies
+
+Python 3.10+
+
+Manim
+
+FastAPI
+
+Uvicorn
+
+ffmpeg (required by Manim)
+
+📜 License
+
+MIT License — feel free to modify and use.
+
+❤️ Credits
+
+Built with Manim & FastAPI.Inspired by creative coding & animation projects.
+
