@@ -99,7 +99,7 @@ All backend Python dependencies are listed in `backend/requirements.txt`.
 
 ## 📝 License
 
-MIT License — see [LICENSE](LICENSE).
+Free to Use
 
 ---
 
