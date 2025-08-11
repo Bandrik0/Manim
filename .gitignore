@@ -1,0 +1,56 @@
+# macOS
+.DS_Store
+.AppleDouble
+.Icon?
+.Spotlight-V100
+.Trashes
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.cache/
+pytest_cache/
+.mypy_cache/
+.dmypy.json
+
+# Virtual env
+.venv/
+venv/
+env/
+ENV/
+
+# Editors
+.vscode/
+.idea/
+
+# Manim / Render output (local temp)
+media/
+video/
+videos/
+*.mp4
+*.mov
+*.gif
+
+# FastAPI / uvicorn logs
+*.log
+
+# Local uploads/renders (backend uses /tmp at runtime, but just in case)
+tmp/
+uploads/
+renders/
+
+# Node / web servers (if ever used)
+node_modules/
+dist/
+
+# Docker
+*.env
+docker-compose.override.yml
+
+# Hugging Face / HF cache (local)
+.huggingface/

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manim Logo Renderer</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #0b0b0b; color: #eaeaea; }
+    .wrap { max-width: 880px; margin: 40px auto; padding: 0 20px; }
+    h1 { font-weight: 700; letter-spacing: 0.2px; }
+    .card { background: #151515; border: 1px solid #242424; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .block { display: flex; flex-direction: column; gap: 8px; }
+    .drop {
+      border: 2px dashed #333; border-radius: 14px; padding: 24px; text-align: center;
+      background: #0f0f0f;
+    }
+    .drop.drag { border-color: #8ab4ff; background: #101522; }
+    input[type="file"] { display: none; }
+    .btn { background: #3b82f6; color: white; border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 600; cursor: pointer; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .opts { display: grid; gap: 8px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .video { margin-top: 16px; }
+    label.sel { background:#0f0f0f; padding: 12px; border-radius: 12px; border:1px solid #2a2a2a; display:flex; gap:8px; align-items:center; justify-content:center; cursor:pointer;}
+    input[type="color"] { width: 100%; height: 42px; border-radius: 12px; border: 1px solid #2a2a2a; background: transparent; }
+    input[type="number"], select, input[type="text"] { border-radius: 12px; border:1px solid #2a2a2a; background: #0f0f0f; color:#eaeaea; padding: 10px 12px; }
+    .pill { font-size:12px; opacity:0.7 }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Manim Logo Renderer</h1>
+    <p class="pill">SVG für "Draw" empfohlen. PNG/JPG gehen mit Fade/Spin/Bounce.</p>
+
+    <div class="card">
+      <div class="row">
+        <div class="block">
+          <div id="drop" class="drop">
+            <p><strong>Datei hier ablegen</strong> oder</p>
+            <label class="btn"><input id="file" type="file" accept=".svg,.png,.jpg,.jpeg,.webp" />Datei wählen</label>
+            <div id="name" style="opacity:.7;margin-top:8px;"></div>
+          </div>
+          <div class="video" id="videoWrap" style="display:none;">
+            <video id="vid" controls playsinline style="width:100%; border-radius: 12px; border:1px solid #2a2a2a;"></video>
+            <a id="dl" download="logo_animation.mp4" class="btn" style="display:inline-block; margin-top:10px;">Download</a>
+          </div>
+        </div>
+
+        <div class="block">
+          <label>Animation</label>
+          <div class="opts">
+            <label class="sel"><input type="radio" name="anim" value="draw" checked /> draw</label>
+            <label class="sel"><input type="radio" name="anim" value="fade" /> fade</label>
+            <label class="sel"><input type="radio" name="anim" value="spin" /> spin</label>
+            <label class="sel"><input type="radio" name="anim" value="bounce" /> bounce</label>
+          </div>
+
+          <label style="margin-top:12px;">Dauer (Sekunden)</label>
+          <input id="duration" type="number" min="1" step="0.5" value="4">
+
+          <label style="margin-top:12px;">Hintergrundfarbe</label>
+          <input id="bg" type="text" value="#111111" />
+
+          <label style="margin-top:12px;">Qualität</label>
+          <select id="quality">
+            <option value="l">Low</option>
+            <option value="m" selected>Medium</option>
+            <option value="h">High</option>
+            <option value="u">Ultra</option>
+          </select>
+
+          <button id="go" class="btn" style="margin-top:16px;">Rendern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_URL = "http://localhost:8000";
+const fileInput = document.getElementById('file');
+const drop = document.getElementById('drop');
+const nameEl = document.getElementById('name');
+const go = document.getElementById('go');
+const vid = document.getElementById('vid');
+const videoWrap = document.getElementById('videoWrap');
+const dl = document.getElementById('dl');
+
+let file;
+
+function setFile(f) {
+  file = f;
+  nameEl.textContent = file ? file.name : "";
+}
+
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+drop.addEventListener('dragleave', e => { drop.classList.remove('drag'); });
+drop.addEventListener('drop', e => {
+  e.preventDefault();
+  drop.classList.remove('drag');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files && e.target.files[0]) setFile(e.target.files[0]);
+});
+
+go.addEventListener('click', async () => {
+  if (!file) { alert("Bitte zuerst eine Datei wählen."); return; }
+  const anim = document.querySelector('input[name="anim"]:checked').value;
+  const duration = document.getElementById('duration').value;
+  const bg = document.getElementById('bg').value || "#111111";
+  const quality = document.getElementById('quality').value;
+
+  go.disabled = true; go.textContent = "Rendere…";
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('animation', anim);
+  fd.append('duration', duration);
+  fd.append('bg_color', bg);
+  fd.append('quality', quality);
+
+  try {
+    const res = await fetch(API_URL + "/render", { method: "POST", body: fd });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(t || "Fehler beim Rendern");
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    vid.src = url;
+    videoWrap.style.display = "block";
+    dl.href = url;
+  } catch (err) {
+    alert("Fehler: " + err.message);
+  } finally {
+    go.disabled = false; go.textContent = "Rendern";
+  }
+});
+</script>
+</body>
+</html>
